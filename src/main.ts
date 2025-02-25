@@ -1,15 +1,8 @@
 import './style.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
-
-// Pokemon type definition
-type pokemonType = string
-
-interface Pokemon {
-    id: number;
-    name: string;
-    image: string;
-    types: pokemonType[];
-}
+import { Pokemon } from './types';
+import { fetchPokemon } from "./api.ts";
+import { team, addToTeam, removeFromTeam } from "./teamManager.ts"
 
 // DOM Elements
 const searchInput = document.getElementById("searchInput") as HTMLInputElement;
@@ -24,13 +17,13 @@ const teamCount = document.getElementById("teamCount") as HTMLSpanElement;
 const searchResultTemplate = document.getElementById("searchResultTemplate") as HTMLTemplateElement;
 const teamPokemonTemplate = document.getElementById("teamPokemonTemplate") as HTMLTemplateElement;
 
-// State
-let team: Pokemon[] = [];
-
 // Event Listeners
-searchButton.addEventListener("click", handleSearch);
-searchInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") handleSearch();
+searchButton.addEventListener("click", () => {
+    void handleSearch(); // Using void operator to explicitly ignore the promise
+});
+
+searchInput.addEventListener("keypress", (e: KeyboardEvent) => {
+    if (e.key === "Enter") void handleSearch(); // Same fix here
 });
 
 // Search Pokemon
@@ -51,33 +44,21 @@ async function handleSearch(): Promise<void> {
     }
 }
 
-// Fetch Pokemon from API
-async function fetchPokemon(name) {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-    if (!response.ok) throw new Error("Pokemon not found");
-
-    const data = await response.json();
-    return {
-        id: data.id,
-        name: data.name,
-        image: data.sprites.front_default,
-        types: data.types.map((type) => type.type.name),
-    };
-}
-
 // Display Search Result
-function displaySearchResult(pokemon) {
+function displaySearchResult(pokemon: Pokemon): void {
     searchResults.innerHTML = "";
 
-    const clone = searchResultTemplate.content.cloneNode(true);
+    const clone = searchResultTemplate.content.cloneNode(true) as DocumentFragment;
 
-    const img = clone.querySelector(".pokemon-image");
+    // Type assertions that tell TypeScript these elements definitely exist
+    const img = clone.querySelector(".pokemon-image") as HTMLImageElement;
     img.src = pokemon.image;
     img.alt = pokemon.name;
 
-    clone.querySelector(".pokemon-name").textContent = pokemon.name;
+    const nameElement = clone.querySelector(".pokemon-name") as HTMLHeadingElement;
+    nameElement.textContent = pokemon.name;
 
-    const typesContainer = clone.querySelector(".pokemon-types");
+    const typesContainer = clone.querySelector(".pokemon-types") as HTMLDivElement;
     pokemon.types.forEach((type) => {
         const badge = document.createElement("span");
         badge.className = `type-badge type-${type}`;
@@ -85,50 +66,31 @@ function displaySearchResult(pokemon) {
         typesContainer.appendChild(badge);
     });
 
-    const addButton = clone.querySelector(".add-button");
-    addButton.addEventListener("click", () => addToTeam(pokemon));
+    const addButton = clone.querySelector(".add-button") as HTMLButtonElement;
+    addButton.addEventListener("click", () => {
+        addToTeam(pokemon, showError);
+        updateTeamDisplay();
+    });
 
     searchResults.appendChild(clone);
 }
 
-// Add Pokemon to Team
-function addToTeam(pokemon) {
-    if (team.length >= 6) {
-        showError("Team is full! Remove a Pokemon first.");
-        return;
-    }
-
-    if (team.some((p) => p.id === pokemon.id)) {
-        showError("This Pokemon is already on your team!");
-        return;
-    }
-
-    team.push(pokemon);
-    updateTeamDisplay();
-    showError("");
-}
-
-// Remove Pokemon from Team
-function removeFromTeam(pokemonId) {
-    team = team.filter((pokemon) => pokemon.id !== pokemonId);
-    updateTeamDisplay();
-}
-
 // Update Team Display
-function updateTeamDisplay() {
+function updateTeamDisplay(): void {
     teamContainer.innerHTML = "";
-    teamCount.textContent = team.length;
+    teamCount.textContent = team.length.toString();
 
     team.forEach((pokemon) => {
-        const clone = teamPokemonTemplate.content.cloneNode(true);
+        const clone = teamPokemonTemplate.content.cloneNode(true) as DocumentFragment;
 
-        const img = clone.querySelector(".pokemon-image");
+        const img = clone.querySelector(".pokemon-image") as HTMLImageElement;
         img.src = pokemon.image;
         img.alt = pokemon.name;
 
-        clone.querySelector(".pokemon-name").textContent = pokemon.name;
+        const nameElement = clone.querySelector(".pokemon-name") as HTMLHeadingElement;
+        nameElement.textContent = pokemon.name;
 
-        const typesContainer = clone.querySelector(".pokemon-types");
+        const typesContainer = clone.querySelector(".pokemon-types") as HTMLDivElement;
         pokemon.types.forEach((type) => {
             const badge = document.createElement("span");
             badge.className = `type-badge type-${type}`;
@@ -136,19 +98,22 @@ function updateTeamDisplay() {
             typesContainer.appendChild(badge);
         });
 
-        const removeButton = clone.querySelector(".remove-button");
-        removeButton.addEventListener("click", () => removeFromTeam(pokemon.id));
+        const removeButton = clone.querySelector(".remove-button") as HTMLButtonElement;
+        removeButton.addEventListener("click", () => {
+            removeFromTeam(pokemon.id);
+            updateTeamDisplay();
+        });
 
         teamContainer.appendChild(clone);
     });
 }
 
 // UI Helpers
-function showLoading(show) {
+function showLoading(show: boolean): void {
     loadingSpinner.classList.toggle("d-none", !show);
 }
 
-function showError(message) {
+function showError(message: string): void {
     errorMessage.textContent = message;
     errorMessage.classList.toggle("d-none", !message);
 }
