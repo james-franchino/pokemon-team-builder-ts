@@ -1,0 +1,92 @@
+/* Add specific selectors to override Bootstrap */
+.card .pokemon-image {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.card .pokemon-name {
+  text-transform: capitalize;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.card.pokemon-card {
+  transition: transform 0.2s;
+}
+
+.card.pokemon-card:hover {
+  transform: translateY(-2px);
+}
+
+.pokemon-types .type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  color: white;
+  font-size: 0.875rem;
+  text-transform: capitalize;
+  margin-right: 0.5rem;
+}
+
+/* Pokemon type colors with increased specificity */
+.pokemon-types .type-normal {
+  background-color: #a8a878 !important;
+}
+.pokemon-types .type-fire {
+  background-color: #f08030 !important;
+}
+.pokemon-types .type-water {
+  background-color: #6890f0 !important;
+}
+.pokemon-types .type-electric {
+  background-color: #f8d030 !important;
+}
+.pokemon-types .type-grass {
+  background-color: #78c850 !important;
+}
+.pokemon-types .type-ice {
+  background-color: #98d8d8 !important;
+}
+.pokemon-types .type-fighting {
+  background-color: #c03028 !important;
+}
+.pokemon-types .type-poison {
+  background-color: #a040a0 !important;
+}
+.pokemon-types .type-ground {
+  background-color: #e0c068 !important;
+}
+.pokemon-types .type-flying {
+  background-color: #a890f0 !important;
+}
+.pokemon-types .type-psychic {
+  background-color: #f85888 !important;
+}
+.pokemon-types .type-bug {
+  background-color: #a8b820 !important;
+}
+.pokemon-types .type-rock {
+  background-color: #b8a038 !important;
+}
+.pokemon-types .type-ghost {
+  background-color: #705898 !important;
+}
+.pokemon-types .type-dragon {
+  background-color: #7038f8 !important;
+}
+.pokemon-types .type-dark {
+  background-color: #705848 !important;
+}
+.pokemon-types .type-steel {
+  background-color: #b8b8d0 !important;
+}
+.pokemon-types .type-fairy {
+  background-color: #ee99ac !important;
+}
+
+/* Loading spinner customization */
+#loadingSpinner .spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
