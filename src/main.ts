@@ -1,20 +1,31 @@
 import './style.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
+
+// Pokemon type definition
+type pokemonType = string
+
+interface Pokemon {
+    id: number;
+    name: string;
+    image: string;
+    types: pokemonType[];
+}
 
 // DOM Elements
-const searchInput = document.getElementById("searchInput");
-const searchButton = document.getElementById("searchButton");
-const errorMessage = document.getElementById("errorMessage");
-const loadingSpinner = document.getElementById("loadingSpinner");
-const searchResults = document.getElementById("searchResults");
-const teamContainer = document.getElementById("teamContainer");
-const teamCount = document.getElementById("teamCount");
+const searchInput = document.getElementById("searchInput") as HTMLInputElement;
+const searchButton = document.getElementById("searchButton") as HTMLButtonElement;
+const errorMessage = document.getElementById("errorMessage") as HTMLDivElement;
+const loadingSpinner = document.getElementById("loadingSpinner") as HTMLDivElement;
+const searchResults = document.getElementById("searchResults") as HTMLDivElement;
+const teamContainer = document.getElementById("teamContainer") as HTMLDivElement;
+const teamCount = document.getElementById("teamCount") as HTMLSpanElement;
 
 // Templates
-const searchResultTemplate = document.getElementById("searchResultTemplate");
-const teamPokemonTemplate = document.getElementById("teamPokemonTemplate");
+const searchResultTemplate = document.getElementById("searchResultTemplate") as HTMLTemplateElement;
+const teamPokemonTemplate = document.getElementById("teamPokemonTemplate") as HTMLTemplateElement;
 
 // State
-let team = [];
+let team: Pokemon[] = [];
 
 // Event Listeners
 searchButton.addEventListener("click", handleSearch);
@@ -23,7 +34,7 @@ searchInput.addEventListener("keypress", (e) => {
 });
 
 // Search Pokemon
-async function handleSearch() {
+async function handleSearch(): Promise<void> {
     const searchTerm = searchInput.value.trim().toLowerCase();
     if (!searchTerm) return;
 
